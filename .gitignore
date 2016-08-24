@@ -1,5 +1,4 @@
 vendor
-db/*
-!db/.gitkeep
+db
 .bundle
 tmp
