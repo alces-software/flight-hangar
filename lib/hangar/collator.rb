@@ -24,6 +24,7 @@ module Hangar
     def initialize(type, rejector = nil)
       @type = type
       @rejector = rejector
+      @seen = []
     end
 
     def collate(collection, &block)
@@ -32,16 +33,24 @@ module Hangar
           next if reject?(e)
           r = @type[e]
           unless r.nil?
-            a << r
-            block.call(r,a) unless block.nil? || a.include?(r)
+            seen(e) do
+              block.call(r,a) unless block.nil?
+              a << r
+            end
           end
         end
       end
     end
 
     private
+    def seen(e, &block)
+      @seen.push(e)
+      block.call
+      @seen.pop
+    end
+
     def reject?(o)
-      @rejector && @rejector.call(o)
+      @seen.include?(o) || (@rejector && @rejector.call(o))
     end
   end
 end
