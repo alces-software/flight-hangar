@@ -76,6 +76,9 @@ module Hangar
         resources.each do |r|
           a.concat(r.parameters).uniq!
         end
+        unless Hangar.fetch('AdditionalParameters').nil?
+          a.concat(Hangar.fetch('AdditionalParameters').map(&Parameter.method(:[]))).uniq!
+        end
       end
     end
 
