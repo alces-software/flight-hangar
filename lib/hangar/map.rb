@@ -52,7 +52,7 @@ module Hangar
         input.each do |k,v|
           output[Hangar.render(k)] = {}.tap do |h|
             v.each do |k1, v1|
-              h[k1] = Hangar.render(v1) if String === v1
+              h[k1] = String === v1 ? Hangar.render(v1) : v1
             end
           end
         end
