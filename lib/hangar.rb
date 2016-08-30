@@ -50,7 +50,7 @@ module Hangar
     def fetch(key, default = nil)
       if values.key?(key)
         values[key]
-      elsif default
+      elsif !default.nil?
         default
       else
         raise "Required configuration value not found: #{key}"
