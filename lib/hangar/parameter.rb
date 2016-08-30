@@ -80,7 +80,10 @@ module Hangar
         "Description" => Hangar.render(description),
         "Type" => type
       }.tap do |h|
-        h['Default'] = Hangar.render(default.to_s) if default
+        if default
+          v = Hangar.render(default.to_s)
+          h['Default'] = v unless v == ''
+        end
         h['ConstraintDescription'] = Hangar.render(error) if error
         case type
         when "String"
