@@ -19,6 +19,7 @@
 # For more information on the Alces Flight Hangar, please visit:
 # https://github.com/alces-software/flight-hangar
 #==============================================================================
+require 'fileutils'
 require 'commander'
 require 'hangar/template'
 
@@ -35,12 +36,32 @@ module Hangar
     command :render do |c|
       c.syntax = 'hangar render [options] NAME'
       c.option '--config NAME', 'Choose a config file'
+      c.option '--all', 'Render all templates'
+      c.option '--output DIRECTORY', 'Render to a file in an output directory'
+      c.option '--[no-]pretty', 'Render templates prettily or not'
+
       c.action do |args, options|
         if options.config
           Hangar.values.merge!(YAML.load_file(File.join(Hangar.dbroot,'config',"#{options.config}.yml")))
         end
 
-        puts Hangar::Template.load(args[0]).render
+        output_dir = options.output || File.join(Hangar.root, "output")
+        FileUtils.mkdir_p(output_dir)
+
+        if options.all
+          Dir[File.join(Hangar.dbroot,'templates','*.yml')].each do |tf|
+            t = File.basename(tf,'.yml')
+            File.open(File.join(output_dir, "#{t}.json"), 'w') do |f|
+              f.puts Hangar::Template.load(t).render(pretty: options.pretty)
+            end
+          end
+        elsif options.output
+          File.open(File.join(output_dir, "#{args[0]}.json"),'w') do |f|
+            f.puts Hangar::Template.load(args[0]).render(pretty: options.pretty)
+          end
+        else
+          puts Hangar::Template.load(args[0]).render(pretty: options.pretty)
+        end
       end
     end
   end

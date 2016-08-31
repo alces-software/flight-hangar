@@ -109,9 +109,13 @@ module Hangar
       end
     end
 
-    def render
+    def render(pretty: false)
       Hangar.with_profiles(profiles) do
-        to_h.to_json
+        if pretty
+          JSON.pretty_generate(to_h)
+        else
+          to_h.to_json
+        end
       end
     end
 
