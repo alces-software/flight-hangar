@@ -36,13 +36,30 @@ module Hangar
     command :render do |c|
       c.syntax = 'hangar render [options] NAME'
       c.option '--config NAME', 'Choose a config file'
+      c.option '--values KEYVALUE', 'Override a config value'
       c.option '--all', 'Render all templates'
       c.option '--output DIRECTORY', 'Render to a file in an output directory'
       c.option '--[no-]pretty', 'Render templates prettily or not'
 
       c.action do |args, options|
         if options.config
+          puts "Using config: #{options.config}"
           Hangar.values.merge!(YAML.load_file(File.join(Hangar.dbroot,'config',"#{options.config}.yml")))
+        end
+        if options.values
+          options.values.split(',').each do |val|
+            puts "Overriding value: #{val}"
+            k, v = val.split('=')
+            h = Hangar.values
+            ks = k.split('.')
+            ks[0..-2].each do |kk|
+              if ! Hash === h[kk]
+                h[kk] = {}
+              end
+              h = h[kk]
+            end
+            h[ks.last] = v || ''
+          end
         end
 
         output_dir = options.output || File.join(Hangar.root, "output")
@@ -51,12 +68,16 @@ module Hangar
         if options.all
           Dir[File.join(Hangar.dbroot,'templates','*.yml')].each do |tf|
             t = File.basename(tf,'.yml')
-            File.open(File.join(output_dir, "#{t}.json"), 'w') do |f|
+            o = File.join(output_dir, "#{t}.json")
+            File.open(o, 'w') do |f|
+              puts "Wrote: #{o}"
               f.puts Hangar::Template.load(t).render(pretty: options.pretty)
             end
           end
         elsif options.output
-          File.open(File.join(output_dir, "#{args[0]}.json"),'w') do |f|
+          o = File.join(output_dir, "#{args[0]}.json")
+          File.open(o,'w') do |f|
+            puts "Wrote: #{o}"
             f.puts Hangar::Template.load(args[0]).render(pretty: options.pretty)
           end
         else
