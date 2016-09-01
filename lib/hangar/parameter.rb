@@ -25,19 +25,13 @@ module Hangar
   class Parameter
     class << self
       def [](name)
-        (@cache ||= load)[name]
-      end
-      def inclusions
-        @inclusions ||= []
-      end
-      def inclusions=(inclusions)
-        @inclusions = inclusions
+        (Hangar.context.caches.parameters ||= load)[name]
       end
       def load
         {}.tap do |h|
           YAML.load_file(File.join(Hangar.dbroot,'tables',"parameters.yml")).each do |p|
             # ignore parameters that are currently being provided as resources.
-            next if p['resource'] && !inclusions.include?(p['name'])
+            next if p['resource'] && !Hangar.context.parameter_inclusions.include?(p['name'])
             h[p['name']] = new(p)
           end
         end

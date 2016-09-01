@@ -25,7 +25,7 @@ module Hangar
   class Map
     class << self
       def [](name)
-        (@cache ||= load)[name] || (raise "No mapping found: #{name}")
+        (Hangar.context.caches.maps ||= load)[name] || (raise "No mapping found: #{name}")
       end
       def load
         {}.tap do |h|

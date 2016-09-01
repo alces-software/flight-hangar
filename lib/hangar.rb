@@ -20,6 +20,7 @@
 # https://github.com/alces-software/flight-hangar
 #==============================================================================
 require 'hangar/cli'
+require 'hangar/render_context'
 
 module Hangar
   class << self
@@ -45,6 +46,10 @@ module Hangar
       block.call.tap do
         @profiles = old_profiles
       end
+    end
+
+    def context
+      @render_context ||= RenderContext.new
     end
 
     def fetch(key, default = nil)

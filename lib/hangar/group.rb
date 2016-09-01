@@ -25,7 +25,7 @@ module Hangar
   class Group
     class << self
       def [](name)
-        (@cache ||= load)[name]
+        (Hangar.context.caches.groups ||= load)[name]
       end
       def load
         {}.tap do |h|

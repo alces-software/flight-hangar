@@ -25,7 +25,7 @@ module Hangar
   class Output
     class << self
       def [](name)
-        (@cache ||= load)[name]
+        (Hangar.context.caches.outputs ||= load)[name]
       end
       def load
         {}.tap do |h|

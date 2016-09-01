@@ -43,12 +43,12 @@ module Hangar
 
       c.action do |args, options|
         if options.config
-          puts "Using config: #{options.config}"
+          STDERR.puts "Using config: #{options.config}"
           Hangar.values.merge!(YAML.load_file(File.join(Hangar.dbroot,'config',"#{options.config}.yml")))
         end
         if options.values
           options.values.split(',').each do |val|
-            puts "Overriding value: #{val}"
+            STDERR.puts "Overriding value: #{val}"
             k, v = val.split('=')
             h = Hangar.values
             ks = k.split('.')
@@ -70,14 +70,14 @@ module Hangar
             t = File.basename(tf,'.yml')
             o = File.join(output_dir, "#{t}.json")
             File.open(o, 'w') do |f|
-              puts "Wrote: #{o}"
+              STDERR.puts "Generating: #{o}"
               f.puts Hangar::Template.load(t).render(pretty: options.pretty)
             end
           end
         elsif options.output
           o = File.join(output_dir, "#{args[0]}.json")
           File.open(o,'w') do |f|
-            puts "Wrote: #{o}"
+            STDERR.puts "Generating: #{o}"
             f.puts Hangar::Template.load(args[0]).render(pretty: options.pretty)
           end
         else

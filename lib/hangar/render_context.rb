@@ -19,33 +19,27 @@
 # For more information on the Alces Flight Hangar, please visit:
 # https://github.com/alces-software/flight-hangar
 #==============================================================================
+require 'yaml'
+
 module Hangar
-  module Cache
-    def [](name)
-      Hangar.profiles.find do |profile|
-        v = ((Hangar.context.caches[self.name] ||= {})[profile] ||= Hash.new do |h,k|
-               begin
-                 h[k] = load(profile, k)
-               rescue Errno::ENOENT
-                 nil
-               end
-             end)[name]
-        break v unless v.nil?
-      end
+  class RenderContext
+    attr_accessor :caches, :configs
+
+    def initialize
+      clear
     end
 
-    def load(profile, name)
-      raise NotImplementedError, "Includers should implement #load method"
+    def clear
+      @caches = OpenStruct.new
+      @configs = OpenStruct.new
     end
 
-    def collators
-      Hangar.context.caches.collators ||= Hash.new do |h,k|
-        h[k] = Collator.new(k)
-      end
+    def parameter_inclusions
+      @configs.parameter_inclusions ||= []
     end
 
-    def collate(collection, type, &block)
-      collators[type].collate(collection, &block)
+    def parameter_inclusions=(a)
+      @configs.parameter_inclusions = a
     end
   end
 end

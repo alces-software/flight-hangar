@@ -34,18 +34,32 @@ module Hangar
       end
     end
 
-    attr_accessor :resource_names, :output_names, :description, :profiles
+    attr_accessor :resource_names, :output_names, :description, :profiles, :inputs
     def initialize(h)
       self.profiles = h['profiles'] || []
       self.description = h['description']
       self.resource_names = h['resources']
-      if h['inputs']
-        rejector = lambda {|o| h['inputs'].include?(o)}
-        Resource.collators[Resource] = Collator.new(Resource, rejector)
-        Parameter.inclusions = h['inputs']
-      end
+      self.inputs = h['inputs'] || []
       self.output_names = h['outputs']
     end
+
+    def render(pretty: false)
+      Hangar.context.clear
+      if inputs.any?
+        rejector = lambda {|o| inputs.include?(o)}
+        Resource.collators[Resource] = Collator.new(Resource, rejector)
+        Hangar.context.parameter_inclusions = inputs
+      end
+      Hangar.with_profiles(profiles) do
+        if pretty
+          JSON.pretty_generate(to_h)
+        else
+          to_h.to_json
+        end
+      end
+    end
+
+    private
 
     def resources
       @resources ||= [].tap do |a|
@@ -108,18 +122,6 @@ module Hangar
         h['Outputs'] = outputs.map(&:to_a).to_h if outputs.any?
       end
     end
-
-    def render(pretty: false)
-      Hangar.with_profiles(profiles) do
-        if pretty
-          JSON.pretty_generate(to_h)
-        else
-          to_h.to_json
-        end
-      end
-    end
-
-    private
 
     def metadata
       {
