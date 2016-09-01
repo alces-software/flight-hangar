@@ -93,6 +93,7 @@ module Hangar
         unless Hangar.fetch('AdditionalParameters',[]).empty?
           a.concat(Hangar.fetch('AdditionalParameters').map(&Parameter.method(:[]))).uniq!
         end
+        a.concat(inputs.map(&Parameter.method(:[])).compact).uniq!
       end.reject {|p| resources.map(&:name).include?(p.name) }
     end
 
