@@ -44,7 +44,9 @@ module Hangar
       c.action do |args, options|
         if options.config
           STDERR.puts "Using config: #{options.config}"
-          Hangar.values.merge!(YAML.load_file(File.join(Hangar.dbroot,'config',"#{options.config}.yml")))
+          options.config.split(',').each do |c|
+            Hangar.values.merge!(YAML.load_file(File.join(Hangar.dbroot,'config',"#{c}.yml")))
+          end
         end
         if options.values
           options.values.split(',').each do |val|
