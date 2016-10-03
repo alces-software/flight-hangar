@@ -4,7 +4,7 @@ A tool for the consistent creation of complex CloudFormation templates.
 
 ## Prerequisites
 
- * Ruby 2.1.0+
+ * Ruby 2.2.0+
  * Bundler
 
 ## Installation
