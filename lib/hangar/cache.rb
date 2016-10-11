@@ -21,13 +21,32 @@
 #==============================================================================
 module Hangar
   module Cache
+    def exclusions
+      @exclusions ||= Hash.new {|h,k| h[k] = []}
+    end
+    def additions
+      @additions ||= Hash.new {|h,k| h[k] = []}
+    end
+
     def [](name)
+      @exclusions = @additions = nil
       Hangar.profiles.find do |profile|
         v = ((Hangar.context.caches[self.name] ||= {})[profile] ||= Hash.new do |h,k|
                begin
-                 h[k] = load(profile, k)
+                 o = load(profile, k)
+                 h[k] = o
+                 # if loaded item is a modifier, return nil, record modifications, try again
+                 if o.respond_to?(:modifier?) && o.modifier?
+                   o.exclusions.each {|a,v| exclusions[a].concat(o.exclusions[a])}
+                   o.additions.each {|a,v| additions[a].concat(o.additions[a])}
+                   h[k] = nil
+                 else
+                   exclusions.each {|a,v| o.instance_variable_get("@#{a}").delete_if {|e| v.include?(e)}}
+                   additions.each {|a,v| o.instance_variable_get("@#{a}").concat(v).uniq!}
+                   h[k] = o
+                 end
                rescue Errno::ENOENT
-                 nil
+                 h[k] = nil
                end
              end)[name]
         break v unless v.nil?

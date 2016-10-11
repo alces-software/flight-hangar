@@ -115,12 +115,12 @@ module Hangar
       }.tap do |h|
         if parameters.any?
           h['Metadata'] = metadata
-          h['Parameters'] = parameters.map(&:to_a).to_h
+          h['Parameters'] = parameters.sort.map(&:to_a).to_h
         end
-        h['Conditions'] = conditions.map(&:to_a).to_h if conditions.any?
-        h['Mappings'] = maps.map(&:to_a).to_h if maps.any?
-        h['Resources'] = resources.map(&:to_a).to_h
-        h['Outputs'] = outputs.map(&:to_a).to_h if outputs.any?
+        h['Conditions'] = conditions.sort.map(&:to_a).to_h if conditions.any?
+        h['Mappings'] = maps.sort.map(&:to_a).to_h if maps.any?
+        h['Resources'] = resources.sort.map(&:to_a).to_h
+        h['Outputs'] = outputs.sort.map(&:to_a).to_h if outputs.any?
       end
     end
 
@@ -136,7 +136,7 @@ module Hangar
             end
           end,
           "ParameterLabels" => {}.tap do |h|
-            parameters.each do |p|
+            parameters.sort.each do |p|
               h[p.name] = {"default": p.label}
             end
           end

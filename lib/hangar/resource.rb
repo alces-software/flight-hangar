@@ -36,6 +36,7 @@ module Hangar
     end
 
     attr_accessor :name, :after, :depends, :condition, :conditions, :maps, :type, :properties
+    attr_accessor :exclusions, :additions
     def initialize(name, h)
       self.name = name
       self.after = h['after'] || []
@@ -45,6 +46,12 @@ module Hangar
       self.maps = h['maps'] || []
       self.type = h['type']
       self.properties = JSON.parse("{#{Hangar.render(h['properties'])}}") if h['properties']
+      self.exclusions = h['exclusions'] || {}
+      self.additions = h['additions'] || {}
+    end
+
+    def modifier?
+      exclusions.keys.any? || additions.keys.any?
     end
 
     def resources
@@ -87,6 +94,10 @@ module Hangar
 
     def to_a
       [name, to_h]
+    end
+
+    def <=>(other)
+      self.name <=> other.name
     end
 
     private

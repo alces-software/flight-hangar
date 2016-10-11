@@ -62,6 +62,10 @@ module Hangar
       [name, condition]
     end
 
+    def <=>(other)
+      self.name <=> other.name
+    end
+
     private
     def collate(*a, &b)
       self.class.collate(*a, &b)

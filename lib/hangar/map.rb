@@ -46,6 +46,10 @@ module Hangar
       [name, map]
     end
 
+    def <=>(other)
+      self.name <=> other.name
+    end
+
     private
     def render(input)
       {}.tap do |output|

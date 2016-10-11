@@ -33,11 +33,11 @@ module Hangar
     attr_accessor :name, :data
     def initialize(name, h)
       self.name = name
-      self.data = Hangar.render(h['data'])
+      self.data = h['data']
     end
 
     def to_s
-      data
+      Hangar.render(self.data)
     end
   end
 end

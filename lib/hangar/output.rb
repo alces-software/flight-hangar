@@ -64,5 +64,9 @@ module Hangar
     def to_a
       [name, to_h]
     end
+
+    def <=>(other)
+      self.name <=> other.name
+    end
   end
 end
