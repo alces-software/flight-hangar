@@ -20,5 +20,6 @@
 # https://github.com/alces-software/flight-hangar
 #==============================================================================
 source 'http://rubygems.org'
+ruby '2.2.4'
 
 gem 'commander'
