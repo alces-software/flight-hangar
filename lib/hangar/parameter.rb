@@ -91,6 +91,9 @@ module Hangar
           h['MaxValue'] = Hangar.render(max.to_s) if max
         end
       end
+    rescue
+      STDERR.puts self.inspect
+      raise
     end
 
     def to_a

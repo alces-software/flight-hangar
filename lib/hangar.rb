@@ -33,7 +33,12 @@ module Hangar
     end
 
     def render(tpl)
-      ERB.new(tpl).result(BasicObject.new.instance_eval { Kernel.binding })
+      begin
+        ERB.new(tpl).result(BasicObject.new.instance_eval { Kernel.binding })
+      rescue
+        STDERR.puts tpl
+        raise
+      end
     end
 
     def profiles
