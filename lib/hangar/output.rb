@@ -36,7 +36,7 @@ module Hangar
       end
     end
 
-    attr_accessor :name, :description, :value, :resource, :attribute, :raw_value, :condition
+    attr_accessor :name, :description, :value, :resource, :attribute, :raw_value, :condition, :export
     def initialize(h)
       self.name = h['name']
       self.description = h['description']
@@ -45,6 +45,7 @@ module Hangar
       self.attribute = h['attribute']
       self.raw_value = h['raw_value']
       self.condition = h['condition']
+      self.export = h['export']
     end
 
     def to_h
@@ -64,6 +65,7 @@ module Hangar
             h['Condition'] = condition
           end
         end
+        h['Export'] = {"Name": {"Fn::Sub": "${AWS::StackName}-#{export}"}} if export
       end
     end
 
