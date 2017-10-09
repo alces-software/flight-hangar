@@ -37,8 +37,14 @@ module Hangar
                  h[k] = o
                  # if loaded item is a modifier, return nil, record modifications, try again
                  if o.respond_to?(:modifier?) && o.modifier?
-                   o.exclusions.each {|a,v| exclusions[a].concat(o.exclusions[a])}
-                   o.additions.each {|a,v| additions[a].concat(o.additions[a])}
+                   o.exclusions.each do |a,v|
+                     excluded = o.exclusions[a].reject {|t| additions[a].include?(t)}
+                     exclusions[a].concat(excluded)
+                   end
+                   o.additions.each do |a,v|
+                     added = o.additions[a].reject {|t| exclusions[a].include?(t)}
+                     additions[a].concat(added)
+                   end
                    h[k] = nil
                  else
                    exclusions.each {|a,v| o.instance_variable_get("@#{a}").delete_if {|e| v.include?(e)}}
