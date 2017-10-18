@@ -76,7 +76,11 @@ module Hangar
       }.tap do |h|
         if default
           v = Hangar.render(default.to_s)
-          h['Default'] = v unless v == ''
+          if v == '%NULL%'
+            h['Default'] = ''
+          elsif v != ''
+            h['Default'] = v
+          end
         end
         h['ConstraintDescription'] = Hangar.render(error) if error
         case type
